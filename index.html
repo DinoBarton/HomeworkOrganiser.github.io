@@ -8,6 +8,7 @@
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
+            position: relative;
         }
         #homework-list {
             list-style: none;
@@ -15,6 +16,15 @@
         }
         .homework-item {
             margin-bottom: 10px;
+        }
+        /* Positioning the GIF */
+        #gif-corner {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 100px; /* Adjust the size if needed */
+            height: auto;
+            z-index: 1000; /* Ensure it's above other elements */
         }
     </style>
 </head>
@@ -25,6 +35,9 @@
     <button onclick="addHomework()">Add</button>
     <button onclick="sortHomework()">Sort by Due Date</button>
     <ul id="homework-list"></ul>
+
+    <!-- Inserting the GIF -->
+    <img id="gif-corner" src="doge2.gif" alt="Corner GIF">
 
     <script>
         var homeworkList = [];
