@@ -22,7 +22,7 @@
             position: fixed;
             bottom: 20px;
             right: 20px;
-            width: 200px; /* Adjust the size if needed */
+            width: 100px; /* Adjust the size if needed */
             height: auto;
             z-index: 1000; /* Ensure it's above other elements */
         }
@@ -42,6 +42,15 @@
     <script>
         var homeworkList = [];
 
+        // Load data from local storage when the page loads
+        window.onload = function() {
+            var storedHomework = localStorage.getItem('homeworkList');
+            if (storedHomework) {
+                homeworkList = JSON.parse(storedHomework);
+                renderHomeworkList();
+            }
+        }
+
         function addHomework() {
             var input = document.getElementById("homeworkInput");
             var homework = input.value.trim();
@@ -53,7 +62,8 @@
                     dueDate: dueDate
                 };
                 homeworkList.push(homeworkItem);
-                addHomeworkToList(homeworkItem);
+                saveToLocalStorage();
+                renderHomeworkList();
                 input.value = "";
                 document.getElementById("dueDateInput").value = "";
             } else {
@@ -61,42 +71,43 @@
             }
         }
 
-        function addHomeworkToList(homeworkItem) {
+        function renderHomeworkList() {
             var list = document.getElementById("homework-list");
-            var listItem = document.createElement("li");
-            listItem.className = "homework-item";
+            list.innerHTML = '';
 
-            listItem.appendChild(document.createTextNode(homeworkItem.homework + " - Due Date: " + homeworkItem.dueDate));
+            homeworkList.forEach(function(item) {
+                var listItem = document.createElement("li");
+                listItem.className = "homework-item";
+                listItem.appendChild(document.createTextNode(item.homework + " - Due Date: " + item.dueDate));
 
-            var deleteButton = document.createElement("button");
-            deleteButton.appendChild(document.createTextNode("Delete"));
-            deleteButton.onclick = function() {
-                list.removeChild(listItem);
-                removeHomeworkFromList(homeworkItem);
-            };
-            listItem.appendChild(deleteButton);
+                var deleteButton = document.createElement("button");
+                deleteButton.appendChild(document.createTextNode("Delete"));
+                deleteButton.onclick = function() {
+                    removeHomework(item);
+                };
+                listItem.appendChild(deleteButton);
 
-            list.appendChild(listItem);
+                list.appendChild(listItem);
+            });
         }
 
-        function removeHomeworkFromList(homeworkItem) {
-            var index = homeworkList.indexOf(homeworkItem);
+        function removeHomework(item) {
+            var index = homeworkList.indexOf(item);
             if (index !== -1) {
                 homeworkList.splice(index, 1);
+                saveToLocalStorage();
+                renderHomeworkList();
             }
         }
 
         function sortHomework() {
             homeworkList.sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
-            clearHomeworkList();
-            homeworkList.forEach(addHomeworkToList);
+            saveToLocalStorage();
+            renderHomeworkList();
         }
 
-        function clearHomeworkList() {
-            var list = document.getElementById("homework-list");
-            while (list.firstChild) {
-                list.removeChild(list.firstChild);
-            }
+        function saveToLocalStorage() {
+            localStorage.setItem('homeworkList', JSON.stringify(homeworkList));
         }
     </script>
 </body>
