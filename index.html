@@ -26,6 +26,25 @@
             height: auto;
             z-index: 1000; /* Ensure it's above other elements */
         }
+        /* Styling for the pop-up div */
+        #notice-popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #f8f8f8;
+            border: 1px solid #ccc;
+            padding: 20px;
+            z-index: 2000; /* Ensure it's above other elements */
+        }
+        /* Styling for the close button */
+        .close-button {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -37,18 +56,53 @@
     <ul id="homework-list"></ul>
 
     <!-- Inserting the GIF -->
-    <img id="gif-corner" src="doge2.gif" alt="Corner GIF">
+    <img id="gif-corner" src="your-gif-url.gif" alt="Corner GIF">
+
+    <!-- Notice pop-up div -->
+    <div id="notice-popup">
+        <span class="close-button" onclick="toggleNoticePopup()">X</span>
+        <h2>Notices</h2>
+        <p id="viewCountNotice">View count: 0</p>
+        <p id="devLogNotice">Development Log: Update 1.0</p>
+        <!-- Add other notices here -->
+    </div>
 
     <script>
         var homeworkList = [];
 
-        // Load data from local storage when the page loads
         window.onload = function() {
             var storedHomework = localStorage.getItem('homeworkList');
             if (storedHomework) {
                 homeworkList = JSON.parse(storedHomework);
                 renderHomeworkList();
             }
+            
+            // Show notice popup with view count and dev log on page load
+            showPopupWithNotices();
+        }
+
+        function showPopupWithNotices() {
+            document.getElementById("viewCountNotice").textContent = "View count: " + getAndUpdateViewCount();
+            toggleNoticePopup();
+            document.getElementById("devLogNotice").textContent = "Development Log: Update 1.0"; // Change as needed
+            setTimeout(toggleNoticePopup, 5000); // Show the popup for 5 seconds
+        }
+
+        function getAndUpdateViewCount() {
+            var viewCount = localStorage.getItem('viewCount');
+            if (!viewCount) {
+                viewCount = 0;
+            } else {
+                viewCount = parseInt(viewCount) + 1;
+            }
+            localStorage.setItem('viewCount', viewCount);
+            return viewCount;
+        }
+
+        // Function to toggle visibility of the notice pop-up
+        function toggleNoticePopup() {
+            var popup = document.getElementById("notice-popup");
+            popup.style.display = (popup.style.display === "block") ? "none" : "block";
         }
 
         function addHomework() {
