@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Homework Organizer</title>
+    <style>
+        /* Basic CSS styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        #homework-list {
+            list-style: none;
+            padding: 0;
+        }
+        .homework-item {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Homework Organizer</h1>
+    <input type="text" id="homeworkInput" placeholder="Enter homework...">
+    <input type="date" id="dueDateInput">
+    <button onclick="addHomework()">Add</button>
+    <button onclick="sortHomework()">Sort by Due Date</button>
+    <ul id="homework-list"></ul>
+
+    <script>
+        var homeworkList = [];
+
+        function addHomework() {
+            var input = document.getElementById("homeworkInput");
+            var homework = input.value.trim();
+            var dueDate = document.getElementById("dueDateInput").value;
+
+            if (homework !== "" && dueDate !== "") {
+                var homeworkItem = {
+                    homework: homework,
+                    dueDate: dueDate
+                };
+                homeworkList.push(homeworkItem);
+                addHomeworkToList(homeworkItem);
+                input.value = "";
+                document.getElementById("dueDateInput").value = "";
+            } else {
+                alert("Please enter valid homework and due date!");
+            }
+        }
+
+        function addHomeworkToList(homeworkItem) {
+            var list = document.getElementById("homework-list");
+            var listItem = document.createElement("li");
+            listItem.className = "homework-item";
+
+            listItem.appendChild(document.createTextNode(homeworkItem.homework + " - Due Date: " + homeworkItem.dueDate));
+
+            var deleteButton = document.createElement("button");
+            deleteButton.appendChild(document.createTextNode("Delete"));
+            deleteButton.onclick = function() {
+                list.removeChild(listItem);
+                removeHomeworkFromList(homeworkItem);
+            };
+            listItem.appendChild(deleteButton);
+
+            list.appendChild(listItem);
+        }
+
+        function removeHomeworkFromList(homeworkItem) {
+            var index = homeworkList.indexOf(homeworkItem);
+            if (index !== -1) {
+                homeworkList.splice(index, 1);
+            }
+        }
+
+        function sortHomework() {
+            homeworkList.sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
+            clearHomeworkList();
+            homeworkList.forEach(addHomeworkToList);
+        }
+
+        function clearHomeworkList() {
+            var list = document.getElementById("homework-list");
+            while (list.firstChild) {
+                list.removeChild(list.firstChild);
+            }
+        }
+    </script>
+</body>
+</html>
