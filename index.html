@@ -42,7 +42,6 @@
     <h1>Homework Organizer</h1>
     <input type="text" id="homeworkInput" placeholder="Enter homework...">
     <input type="date" id="dueDateInput">
-    <input type="number" id="estimatedTimeInput" placeholder="Est. time (min)">
     <button onclick="addHomework()">Add</button>
     <button onclick="sortHomework()">Sort by Due Date</button>
     <ul id="homework-list"></ul>
@@ -57,29 +56,27 @@
                 homeworkList = JSON.parse(storedHomework);
                 renderHomeworkList();
             }
-            setReminders();
+            checkReminders();
+            setInterval(checkReminders, 60 * 1000); // Check reminders every minute
         }
 
         function addHomework() {
             var input = document.getElementById("homeworkInput");
             var homework = input.value.trim();
             var dueDate = document.getElementById("dueDateInput").value;
-            var estimatedTime = parseInt(document.getElementById("estimatedTimeInput").value);
 
-            if (homework !== "" && dueDate !== "" && estimatedTime > 0) {
+            if (homework !== "" && dueDate !== "") {
                 var homeworkItem = {
                     homework: homework,
-                    dueDate: dueDate,
-                    estimatedTime: estimatedTime
+                    dueDate: dueDate
                 };
                 homeworkList.push(homeworkItem);
                 saveToLocalStorage();
                 renderHomeworkList();
                 input.value = "";
                 document.getElementById("dueDateInput").value = "";
-                document.getElementById("estimatedTimeInput").value = "";
             } else {
-                alert("Please enter valid homework, due date, and estimated time (in minutes)!");
+                alert("Please enter valid homework and due date!");
             }
         }
 
@@ -90,7 +87,7 @@
             homeworkList.forEach(function(item) {
                 var listItem = document.createElement("li");
                 listItem.className = "homework-item";
-                listItem.appendChild(document.createTextNode(item.homework + " - Due Date: " + item.dueDate + " - Estimated Time: " + item.estimatedTime + " min"));
+                listItem.appendChild(document.createTextNode(item.homework + " - Due Date: " + item.dueDate));
 
                 var deleteButton = document.createElement("button");
                 deleteButton.appendChild(document.createTextNode("Delete"));
@@ -126,22 +123,35 @@
         }
 
         function setReminder(homeworkItem) {
-            var reminderTime = prompt("Enter reminder time for " + homeworkItem.homework + " (in seconds):");
-            if (reminderTime) {
-                homeworkItem.reminder = reminderTime;
+            var reminderTime = new Date(homeworkItem.dueDate);
+            reminderTime.setHours(17, 0, 0); // Set reminder time at 5 PM the day before
+            var currentTime = new Date();
+
+            if (currentTime < reminderTime) {
+                var timeDifference = reminderTime - currentTime;
+                var secondsDifference = timeDifference / 1000;
+
+                homeworkItem.reminder = secondsDifference;
                 saveToLocalStorage();
-                setReminders();
+            } else {
+                alert("It's too late to set a reminder for this task!");
             }
         }
 
-        function setReminders() {
+        function checkReminders() {
+            var currentTime = new Date();
+            currentTime.setHours(0, 0, 0, 0); // Set to midnight for comparison
+
             homeworkList.forEach(function(item) {
-                if (item.reminder && !item.reminderSet) {
-                    setTimeout(function() {
+                var dueDate = new Date(item.dueDate);
+                dueDate.setHours(0, 0, 0, 0); // Set to midnight for comparison
+
+                if (currentTime.getTime() === dueDate.getTime() - (24 * 60 * 60 * 1000)) {
+                    if (item.reminder && !item.reminderSet) {
                         alert("Reminder: " + item.homework);
                         item.reminderSet = true;
                         saveToLocalStorage();
-                    }, item.reminder * 1000);
+                    }
                 }
             });
         }
