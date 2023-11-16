@@ -45,10 +45,8 @@
     <button onclick="addHomework()">Add</button>
     <button onclick="sortHomework()">Sort by Due Date</button>
     <ul id="homework-list"></ul>
-
     <!-- Inserting the GIF -->
     <img id="gif-corner" src="doge2.gif" alt="Corner GIF">
-
     <script>
         var homeworkList = [];
 
@@ -58,6 +56,7 @@
                 homeworkList = JSON.parse(storedHomework);
                 renderHomeworkList();
             }
+            setReminders();
         }
 
         function addHomework() {
@@ -96,6 +95,13 @@
                 };
                 listItem.appendChild(deleteButton);
 
+                var setReminderButton = document.createElement("button");
+                setReminderButton.appendChild(document.createTextNode("Set Reminder"));
+                setReminderButton.onclick = function() {
+                    setReminder(item);
+                };
+                listItem.appendChild(setReminderButton);
+
                 list.appendChild(listItem);
             });
         }
@@ -113,6 +119,27 @@
             homeworkList.sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
             saveToLocalStorage();
             renderHomeworkList();
+        }
+
+        function setReminder(homeworkItem) {
+            var reminderTime = prompt("Enter reminder time for " + homeworkItem.homework + " (in seconds):");
+            if (reminderTime) {
+                homeworkItem.reminder = reminderTime;
+                saveToLocalStorage();
+                setReminders();
+            }
+        }
+
+        function setReminders() {
+            homeworkList.forEach(function(item) {
+                if (item.reminder && !item.reminderSet) {
+                    setTimeout(function() {
+                        alert("Reminder: " + item.homework);
+                        item.reminderSet = true;
+                        saveToLocalStorage();
+                    }, item.reminder * 1000);
+                }
+            });
         }
 
         function saveToLocalStorage() {
