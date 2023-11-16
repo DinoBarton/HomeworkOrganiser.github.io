@@ -42,6 +42,7 @@
     <h1>Homework Organizer</h1>
     <input type="text" id="homeworkInput" placeholder="Enter homework...">
     <input type="date" id="dueDateInput">
+    <input type="number" id="estimatedTimeInput" placeholder="Est. time (min)">
     <button onclick="addHomework()">Add</button>
     <button onclick="sortHomework()">Sort by Due Date</button>
     <ul id="homework-list"></ul>
@@ -63,19 +64,22 @@
             var input = document.getElementById("homeworkInput");
             var homework = input.value.trim();
             var dueDate = document.getElementById("dueDateInput").value;
+            var estimatedTime = parseInt(document.getElementById("estimatedTimeInput").value);
 
-            if (homework !== "" && dueDate !== "") {
+            if (homework !== "" && dueDate !== "" && estimatedTime > 0) {
                 var homeworkItem = {
                     homework: homework,
-                    dueDate: dueDate
+                    dueDate: dueDate,
+                    estimatedTime: estimatedTime
                 };
                 homeworkList.push(homeworkItem);
                 saveToLocalStorage();
                 renderHomeworkList();
                 input.value = "";
                 document.getElementById("dueDateInput").value = "";
+                document.getElementById("estimatedTimeInput").value = "";
             } else {
-                alert("Please enter valid homework and due date!");
+                alert("Please enter valid homework, due date, and estimated time (in minutes)!");
             }
         }
 
@@ -86,7 +90,7 @@
             homeworkList.forEach(function(item) {
                 var listItem = document.createElement("li");
                 listItem.className = "homework-item";
-                listItem.appendChild(document.createTextNode(item.homework + " - Due Date: " + item.dueDate));
+                listItem.appendChild(document.createTextNode(item.homework + " - Due Date: " + item.dueDate + " - Estimated Time: " + item.estimatedTime + " min"));
 
                 var deleteButton = document.createElement("button");
                 deleteButton.appendChild(document.createTextNode("Delete"));
