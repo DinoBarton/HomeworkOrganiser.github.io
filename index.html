@@ -1,164 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Homework Organizer</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        /* Basic CSS styles */
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            position: relative;
-        }
-        #homework-list {
-            list-style: none;
-            padding: 0;
-        }
-        .homework-item {
-            margin-bottom: 10px;
-        }
-        /* Positioning the GIF */
-        #gif-corner {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 100px; /* Adjust the size if needed */
-            height: auto;
-            z-index: 1000; /* Ensure it's above other elements */
-        }
-        /* Media query for mobile responsiveness */
-        @media screen and (max-width: 600px) {
-            body {
-                margin: 10px;
-            }
-            #gif-corner {
-                width: 80px;
-            }
-        }
-    </style>
+  <title>Countdown App</title>
+  <link rel="stylesheet" type="text/css" href="styles.css">
 </head>
 <body>
-    <h1>Homework Organizer</h1>
-    <input type="text" id="homeworkInput" placeholder="Enter homework...">
-    <input type="date" id="dueDateInput">
-    <button onclick="addHomework()">Add</button>
-    <button onclick="sortHomework()">Sort by Due Date</button>
-    <ul id="homework-list"></ul>
-    <!-- Inserting the GIF -->
-    <img id="gif-corner" src="doge2.gif" alt="Corner GIF">
-    <script>
-        var homeworkList = [];
-
-        window.onload = function() {
-            var storedHomework = localStorage.getItem('homeworkList');
-            if (storedHomework) {
-                homeworkList = JSON.parse(storedHomework);
-                renderHomeworkList();
-            }
-            checkReminders();
-            setInterval(checkReminders, 60 * 1000); // Check reminders every minute
-        }
-
-        function addHomework() {
-            var input = document.getElementById("homeworkInput");
-            var homework = input.value.trim();
-            var dueDate = document.getElementById("dueDateInput").value;
-
-            if (homework !== "" && dueDate !== "") {
-                var homeworkItem = {
-                    homework: homework,
-                    dueDate: dueDate
-                };
-                homeworkList.push(homeworkItem);
-                saveToLocalStorage();
-                renderHomeworkList();
-                input.value = "";
-                document.getElementById("dueDateInput").value = "";
-            } else {
-                alert("Please enter valid homework and due date!");
-            }
-        }
-
-        function renderHomeworkList() {
-            var list = document.getElementById("homework-list");
-            list.innerHTML = '';
-
-            homeworkList.forEach(function(item) {
-                var listItem = document.createElement("li");
-                listItem.className = "homework-item";
-                listItem.appendChild(document.createTextNode(item.homework + " - Due Date: " + item.dueDate));
-
-                var deleteButton = document.createElement("button");
-                deleteButton.appendChild(document.createTextNode("Delete"));
-                deleteButton.onclick = function() {
-                    removeHomework(item);
-                };
-                listItem.appendChild(deleteButton);
-
-                var setReminderButton = document.createElement("button");
-                setReminderButton.appendChild(document.createTextNode("Set Reminder"));
-                setReminderButton.onclick = function() {
-                    setReminder(item);
-                };
-                listItem.appendChild(setReminderButton);
-
-                list.appendChild(listItem);
-            });
-        }
-
-        function removeHomework(item) {
-            var index = homeworkList.indexOf(item);
-            if (index !== -1) {
-                homeworkList.splice(index, 1);
-                saveToLocalStorage();
-                renderHomeworkList();
-            }
-        }
-
-        function sortHomework() {
-            homeworkList.sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
-            saveToLocalStorage();
-            renderHomeworkList();
-        }
-
-        function setReminder(homeworkItem) {
-            var reminderTime = new Date(homeworkItem.dueDate);
-            reminderTime.setHours(17, 0, 0); // Set reminder time at 5 PM the day before
-            var currentTime = new Date();
-
-            if (currentTime < reminderTime) {
-                var timeDifference = reminderTime - currentTime;
-                var secondsDifference = timeDifference / 1000;
-
-                homeworkItem.reminder = secondsDifference;
-                saveToLocalStorage();
-            } else {
-                alert("It's too late to set a reminder for this task!");
-            }
-        }
-
-        function checkReminders() {
-            var currentTime = new Date();
-            currentTime.setHours(0, 0, 0, 0); // Set to midnight for comparison
-
-            homeworkList.forEach(function(item) {
-                var dueDate = new Date(item.dueDate);
-                dueDate.setHours(0, 0, 0, 0); // Set to midnight for comparison
-
-                if (currentTime.getTime() === dueDate.getTime() - (24 * 60 * 60 * 1000)) {
-                    if (item.reminder && !item.reminderSet) {
-                        alert("Reminder: " + item.homework);
-                        item.reminderSet = true;
-                        saveToLocalStorage();
-                    }
-                }
-            });
-        }
-
-        function saveToLocalStorage() {
-            localStorage.setItem('homeworkList', JSON.stringify(homeworkList));
-        }
-    </script>
+  <h1>Countdown App</h1>
+  <div id="countdown"></div>
+  <br><br><br><br>
+  <input type="date" id="event-date" placeholder="Event Date">
+  <input type="time" id="event-time" placeholder="Event Time">
+  <div id="checklist-container">
+    <ul id="checklist"></ul>
+    <input type="text" id="new-item" placeholder="New item">
+    <button id="add-button">Add</button>
+  <script src="script.js"></script>
 </body>
 </html>

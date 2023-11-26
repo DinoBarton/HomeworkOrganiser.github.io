@@ -1,0 +1,59 @@
+/* styles.css */
+
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  background-color: #111;
+  color: #fff;
+  padding-top: 50px;
+}
+
+h1 {
+  color: #fff;
+  font-size: 40px;
+  margin-top: 50px;
+}
+
+#countdown {
+  display: flex;
+  justify-content: center;
+  margin-top: 50px;
+}
+
+#countdown div {
+  margin: 0 10px;
+  padding: 10px;
+  background-color: #333;
+  color: #fff;
+  font-size: 60px;
+  border-radius: 5px;
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Adjusted positioning for input fields */
+#datetime-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 50px;
+  margin-bottom: 50px;
+}
+
+#event-date {
+  margin-right: 10px;
+}
+
+#event-time {
+  margin-left: 10px;
+}
